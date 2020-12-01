@@ -15,5 +15,5 @@ def test_01_ex2():
 def test_01a(day01_numbers):
     assert report_repair(day01_numbers) == 538464
 
-def test_01a(day01_numbers):
+def test_01b(day01_numbers):
     assert report_repair(day01_numbers, n=3) == 278783190
