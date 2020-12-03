@@ -3,3 +3,4 @@ pytest-aoc
 pytest-pudb
 pytest-watch
 pytest-xdist
+more-itertools
