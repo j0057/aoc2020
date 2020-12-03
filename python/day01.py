@@ -6,14 +6,11 @@ def report_repair(expenses, *, n=2):
         if sum(entries)== 2020:
             return prod(entries)
 
-def test_01_ex1():
-    assert report_repair([1721, 979, 366, 299, 675, 1456]) == 514579
+def day01a(expenses): return report_repair(expenses)
+def day01b(expenses): return report_repair(expenses, n=3)
 
-def test_01_ex2():
-    assert report_repair([1721, 979, 366, 299, 675, 1456], n=3) == 241861950
+def test_01_ex1(): assert day01a([1721, 979, 366, 299, 675, 1456]) == 514579
+def test_01_ex2(): assert day01b([1721, 979, 366, 299, 675, 1456]) == 241861950
 
-def test_01a(day01_numbers):
-    assert report_repair(day01_numbers) == 538464
-
-def test_01b(day01_numbers):
-    assert report_repair(day01_numbers, n=3) == 278783190
+def test_01a(day01_numbers): assert day01a(day01_numbers) == 538464
+def test_01b(day01_numbers): assert day01b(day01_numbers) == 278783190
