@@ -3,8 +3,7 @@ def parse(text):
             for passport in text.split('\n\n')]
 
 def is_valid(passport):
-    expected = {'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'}
-    return not expected - set(passport)
+    return {*passport} >= {'byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'}
 
 def is_correct(passport):
     rules = {'byr': lambda x: 1920 <= int(x) <= 2002,
