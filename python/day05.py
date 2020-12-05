@@ -1,5 +1,5 @@
 def seat_id(spec):
-    return int(spec.replace('F', '0').replace('B', '1').replace('R', '1').replace('L', '0'), 2)
+    return int(spec.translate(str.maketrans('FBRL', '0110')), 2)
 
 def day05a(specs): return max(seat_id(s) for s in specs)
 def day05b(specs):
