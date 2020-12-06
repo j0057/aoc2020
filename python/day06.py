@@ -1,9 +1,9 @@
 from functools import reduce
-from itertools import chain
 
-def day06a(text): return sum(len({*chain(*group.split())}) for group in text.split('\n\n'))
-def day06b(text): return sum(len(reduce(lambda a, b: a & b, [{*g} for g in group.split()]))
-                             for group in text.split('\n\n'))
+def parse(text): return [[{*answers} for answers in group.split()] for group in text.split('\n\n')]
+
+def day06a(text): return sum(len(reduce(lambda a, b: a | b, group)) for group in parse(text))
+def day06b(text): return sum(len(reduce(lambda a, b: a & b, group)) for group in parse(text))
 
 ex = 'abc||a|b|c||ab|ac||a|a|a|a||b|'.replace('|', '\n')
 
