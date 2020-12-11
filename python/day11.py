@@ -5,9 +5,12 @@ def parse(lines):
 
 def iterate(state):
     while True:
-        state = {(y, x): '#' if all(state.get((y+dy, x+dx), '.') in {'L', '.'} for dy in [-1, 0, +1] for dx in [-1, 0, +1] if dy or dx)      else
-                         'L' if sum(state.get((y+dy, x+dx), '.') == '#'        for dy in [-1, 0, +1] for dx in [-1, 0, +1] if dy or dx) >= 4 else state[y, x]
-                 for (y, x) in state}
+        state = {(y, x): '#' if c == 0 else
+                         'L' if c >= 4 else state[y, x]
+                 for (y, x, c) in ((y, x, sum(state.get((y+dy, x+dx)) == '#'
+                                              for dy in [-1, 0, +1]
+                                              for dx in [-1, 0, +1] if dy or dx))
+                                   for (y, x) in state)}
         yield state
 
 def day11a(state):
