@@ -7,9 +7,9 @@ def iterate(state):
     while True:
         state = {(y, x): '#' if c == 0 else
                          'L' if c >= 4 else state[y, x]
-                 for (y, x, c) in ((y, x, sum(state.get((y+dy, x+dx)) == '#'
-                                              for dy in [-1, 0, +1]
-                                              for dx in [-1, 0, +1] if dy or dx))
+                 for (y, x, c) in ((y, x, [state.get((y+dy, x+dx))
+                                           for dy in [-1, 0, +1]
+                                           for dx in [-1, 0, +1] if dy or dx].count('#'))
                                    for (y, x) in state)}
         yield state
 
