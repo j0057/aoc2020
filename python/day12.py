@@ -31,4 +31,22 @@ def test_12_ex2b(): assert day12b(ex1) == 286
 def test_12a(day12_lines): assert day12a(day12_lines) == 938
 def test_12b(day12_lines): assert day12b(day12_lines) == 54404
 
+def test_12_learn_math():
+    # an "R270" instruction means three consecutive 90° rotations right. Starting with "1 north, 10 east"...
+    assert (10-1j) * 1j == (1+10j) # 10 south, 1 east
+    assert (1+10j) * 1j == (-10+1j) # 1 north, 10 west
+    assert (-10+1j) * 1j == (-1-10j) # 10 north, 1 west
+
+    # but can't do three rotations like this (* 3 * 1j) --
+    assert (10-1j) * (3 * 1j) == (3+30j)
+    assert (10-1j) * 1j * 1j * 1j == (-1-10j)
+    assert (10-1j) * (0-1j) == (-1-10j)
+
+    # solution: https://docs.python.org/3/library/cmath.html#cmath.rect
+    import math, cmath
+    assert cmath.isclose((10-1j) * cmath.rect(1, math.radians(270)), (-1-10j))
+    # or with math.cos and math.sin...
+    assert cmath.isclose((10-1j) * (math.cos(math.radians(270)) + math.sin(math.radians(270)) * 1j), (-1-10j))
+    # but this suffers from floating point inaccuracy, so have to use cmath.isclose here.
+
 ex1 = 'F10|N3|F7|R90|F11'.split('|')
