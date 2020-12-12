@@ -1,20 +1,30 @@
+from collections import defaultdict
+
 def parse(lines):
     return {(y, x): state for (y, line) in enumerate(lines)
                           for (x, state) in enumerate(line)
                           if state == 'L'}
 
-def iterate(state):
+def iterate(state, max_r):
+    N = defaultdict(lambda: [])
+    for (y, x) in state:
+        for dy in [-1, 0, +1]:
+            for dx in [-1, 0, +1]:
+                if not dy and not dx:
+                    continue
+                for r in range(1, max_r+1):
+                    ny, nx = y+dy*r, x+dx*r
+                    if state.get((ny, nx), '.') == 'L':
+                        N[y, x].append((ny, nx))
+                        break
     while True:
         state = {(y, x): '#' if c == 0 else
                          'L' if c >= 4 else state[y, x]
-                 for (y, x, c) in ((y, x, [state.get((y+dy, x+dx))
-                                           for dy in [-1, 0, +1]
-                                           for dx in [-1, 0, +1] if dy or dx].count('#'))
-                                   for (y, x) in state)}
+                 for (y, x, c) in ((y, x, [state[n] for n in N[y, x]].count('#')) for (y, x) in state)}
         yield state
 
-def day11a(state):
-    for state_ in iterate(state):
+def day11a(state, max_r=1):
+    for state_ in iterate(state, max_r):
         if state == state_:
             return sum(v == '#' for v in state_.values())
         state = state_
