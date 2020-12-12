@@ -14,12 +14,8 @@ def navigate(L, p=0+0j, v=1+0j, m=1):
         elif m==2 and cmd == 'S': v += n * (+0+1j)
         elif m==2 and cmd == 'W': v += n * (-1+0j)
         elif cmd == 'F': p += n * v
-        elif cmd == 'R':
-            for _ in range(n//90):
-                v *= +1j
-        elif cmd == 'L':
-            for _ in range(n//90):
-                v *= -1j
+        elif cmd == 'R': v *= [1, 1j, -1, -1j][n//90]
+        elif cmd == 'L': v *= [1, -1j, -1, 1j][n//90]
         else: raise Exception(f"WTF? {cmd}{n}")
         yield p, v
 
