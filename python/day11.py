@@ -1,4 +1,4 @@
-from collections import defaultdict
+from itertools import islice, chain
 
 def parse(lines):
     return {(y, x): state for (y, line) in enumerate(lines)
@@ -6,17 +6,10 @@ def parse(lines):
                           if state == 'L'}
 
 def iterate(state, max_r, t):
-    N = defaultdict(lambda: [])
-    for (y, x) in state:
-        for dy in [-1, 0, +1]:
-            for dx in [-1, 0, +1]:
-                if not dy and not dx:
-                    continue
-                for r in range(1, max_r+1):
-                    ny, nx = y+dy*r, x+dx*r
-                    if state.get((ny, nx), '.') == 'L':
-                        N[y, x].append((ny, nx))
-                        break
+    N = {(y, x): [*chain(*[[*islice((n for r in range(1, max_r+1) if state.get(n := (y+dy*r, x+dx*r)) == 'L'), 0, 1)]
+                           for dy in [-1, 0, +1]
+                           for dx in [-1, 0, +1] if dy or dx])]
+         for (y, x) in state}
     while True:
         state = {(y, x): '#' if c == 0 else
                          'L' if c >= t else state[y, x]
