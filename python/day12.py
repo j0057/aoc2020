@@ -3,12 +3,12 @@ from collections import deque
 manhattan = lambda n: abs(n.real) + abs(n.imag)
 last = lambda L: deque(L, maxlen=1).pop()
 
-def navigate(L, p=0+0j, v=1+0j):
+def navigate(L, p=0+0j, v=1+0j, m=1):
     for cmd, n in [(x[0], int(x[1:])) for x in L]:
-        if   cmd == 'N': p += n * (+0-1j)
-        elif cmd == 'E': p += n * (+1+0j)
-        elif cmd == 'S': p += n * (+0+1j)
-        elif cmd == 'W': p += n * (-1+0j)
+        if   m==1 and cmd == 'N': p += n * (+0-1j)
+        elif m==1 and cmd == 'E': p += n * (+1+0j)
+        elif m==1 and cmd == 'S': p += n * (+0+1j)
+        elif m==1 and cmd == 'W': p += n * (-1+0j)
         elif cmd == 'F': p += n * v
         elif cmd == 'R':
             for _ in range(n//90):
