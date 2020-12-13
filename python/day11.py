@@ -1,4 +1,7 @@
-from itertools import islice, chain
+import itertools
+
+chain = lambda seq: [*itertools.chain(*[*seq])]
+max_one = lambda seq: [*itertools.islice(seq, 0, 1)]
 
 def parse(lines):
     return {(y, x): state for (y, line) in enumerate(lines)
@@ -6,9 +9,9 @@ def parse(lines):
                           if state == 'L'}
 
 def iterate(state, max_r, t):
-    N = {(y, x): [*chain(*[[*islice((n for r in range(1, max_r+1) if state.get(n := (y+dy*r, x+dx*r)) == 'L'), 0, 1)]
-                           for dy in [-1, 0, +1]
-                           for dx in [-1, 0, +1] if dy or dx])]
+    N = {(y, x): chain(max_one(n for r in range(1, max_r+1) if state.get(n := (y+dy*r, x+dx*r)) == 'L')
+                       for dy in [-1, 0, +1]
+                       for dx in [-1, 0, +1] if dy or dx)
          for (y, x) in state}
     while True:
         state = {(y, x): '#' if c == 0 else
