@@ -1,6 +1,6 @@
 import itertools
 
-chain = lambda seq: [*itertools.chain(*[*seq])]
+chain = lambda seq: [*itertools.chain(*seq)]
 max_one = lambda seq: [*itertools.islice(seq, 0, 1)]
 
 def parse(lines):
