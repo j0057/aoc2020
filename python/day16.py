@@ -5,13 +5,13 @@ def parse(text):
             [int(num) for num in mine.split('\n')[1].split(',')],
             [[int(num) for num in line.split(',')] for line in nearby.split('\n')[1:]])
 
-def invalid_values(fields, mine, nearby):
-    return (num for ticket in nearby
-                for num in ticket
-                if not any(lo <= num <= hi for ranges in fields.values() for lo, hi in ranges))
+def invalid_values(fields, ticket):
+    return [value for value in ticket
+                  if not any(lo <= value <= hi for ranges in fields.values() for lo, hi in ranges)]
 
 def day16a(fields, mine, nearby):
-    return sum(invalid_values(fields, mine, nearby))
+    return sum(value for ticket in nearby
+                     for value in invalid_values(fields, ticket))
 
 def test_16_parse1(): assert parse(ex1)[0] == {'class': [(1, 3), (5, 7)], 'row': [(6, 11), (33, 44)], 'seat': [(13, 40), (45, 50)]}
 def test_16_parse2(): assert parse(ex1)[1] == [7, 1, 14]
