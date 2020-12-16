@@ -10,7 +10,8 @@ def parse(text):
 
 def invalid_values(fields, ticket):
     return [value for value in ticket
-                  if not any(lo <= value <= hi for ranges in fields.values() for lo, hi in ranges)]
+                  if not any(lo <= value <= hi for ranges in fields.values()
+                                               for lo, hi in ranges)]
 
 def field_names(fields, tickets):
     return [reduce(lambda a, b: a & b,
@@ -25,17 +26,22 @@ def day16a(fields, mine, nearby):
                      for value in invalid_values(fields, ticket))
 
 def day16b(fields, mine, nearby, target):
-    names = field_names(fields, [ticket for ticket in nearby if not invalid_values(fields, ticket)])
+    names = field_names(fields, [ticket for ticket in nearby
+                                        if not invalid_values(fields, ticket)])
     uncertain = {*range(len(fields))}
-    while name := next((next(iter(n)) for (i, n) in enumerate(names) if len(n) == 1 and i in uncertain), None):
+    while name := next((next(iter(n)) for (i, n) in enumerate(names)
+                                      if len(n) == 1 and i in uncertain), None):
         for (i, possible) in enumerate(names):
             if len(possible) == 1:
                 uncertain.discard(i)
             else:
                 possible.discard(name)
-    return prod(mine[i] for i, name in enumerate(next(iter(n)) for n in names) if name.startswith(target))
+    return prod(mine[i] for i, name in enumerate(next(iter(n)) for n in names)
+                        if name.startswith(target))
 
-def test_16_parse1(): assert parse(ex1)[0] == {'class': [(1, 3), (5, 7)], 'row': [(6, 11), (33, 44)], 'seat': [(13, 40), (45, 50)]}
+def test_16_parse1(): assert parse(ex1)[0] == {'class': [(1, 3), (5, 7)],
+                                               'row': [(6, 11), (33, 44)],
+                                               'seat': [(13, 40), (45, 50)]}
 def test_16_parse2(): assert parse(ex1)[1] == [7, 1, 14]
 def test_16_parse3(): assert parse(ex1)[2] == [[7, 3, 47], [40, 4, 50], [55, 2, 20], [38, 6, 12]]
 
