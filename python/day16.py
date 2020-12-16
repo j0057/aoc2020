@@ -14,9 +14,9 @@ def invalid_values(fields, ticket):
 
 def field_names(fields, tickets):
     return [reduce(lambda a, b: a & b,
-                   [{name for name, ranges in fields.items()
+                   ({name for name, ranges in fields.items()
                           if any(lo <= ticket[i] <= hi for lo, hi in ranges)}
-                    for ticket in tickets],
+                    for ticket in tickets),
                    {*fields})
             for i in range(len(fields))]
 
