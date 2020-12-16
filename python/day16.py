@@ -3,11 +3,11 @@ def parse(text):
     return ({name: [tuple(map(int, range.split('-'))) for range in ranges.split(' or ')]
              for name, ranges in (line.split(': ') for line in fields.split('\n'))},
             [int(num) for num in mine.split('\n')[1].split(',')],
-            [int(num) for line in nearby.split('\n')[1:]
-                      for num in line.split(',')])
+            [[int(num) for num in line.split(',')] for line in nearby.split('\n')[1:]])
 
 def invalid_values(fields, mine, nearby):
-    return (num for num in nearby
+    return (num for ticket in nearby
+                for num in ticket
                 if not any(lo <= num <= hi for ranges in fields.values() for lo, hi in ranges))
 
 def day16a(fields, mine, nearby):
@@ -15,7 +15,7 @@ def day16a(fields, mine, nearby):
 
 def test_16_parse1(): assert parse(ex1)[0] == {'class': [(1, 3), (5, 7)], 'row': [(6, 11), (33, 44)], 'seat': [(13, 40), (45, 50)]}
 def test_16_parse2(): assert parse(ex1)[1] == [7, 1, 14]
-def test_16_parse3(): assert parse(ex1)[2] == [7, 3, 47, 40, 4, 50, 55, 2, 20, 38, 6, 12]
+def test_16_parse3(): assert parse(ex1)[2] == [[7, 3, 47], [40, 4, 50], [55, 2, 20], [38, 6, 12]]
 
 def test_16_ex1(): assert day16a(*parse(ex1)) == 71
 
