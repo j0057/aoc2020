@@ -22,7 +22,26 @@ def evolve(state):
                                   for (x, y, z, c) in counts(state)
                                   if (c in {2, 3} if (x, y, z) in state else c == 3)}, state)
 
+def parse4(lines):
+    return {(x, y, 0, 0) for (y, line) in enumerate(lines)
+                         for (x, char) in enumerate(line) if char == '#'}
+
+def evolve4(state):
+    counts = lambda state: ((x, y, z, w, sum((x+dx, y+dy, z+dz, w+dw) in state
+                                             for dx in [-1, 0, +1]
+                                             for dy in [-1, 0, +1]
+                                             for dz in [-1, 0, +1]
+                                             for dw in [-1, 0, +1] if dx or dy or dz or dw))
+                            for x in itercoord(state, 0)
+                            for y in itercoord(state, 1)
+                            for z in itercoord(state, 2)
+                            for w in itercoord(state, 3))
+    return iterate(lambda state: {(x, y, z, w)
+                                  for (x, y, z, w, c) in counts(state)
+                                  if (c in {2, 3} if (x, y, z, w) in state else c == 3)}, state)
+
 def day17a(state, n=6): return nth((len(state) for state in evolve(state)), n)
+def day17b(state, n=6): return nth((len(state) for state in evolve4(state)), n)
 
 ex1 = '.#.|..#|###'.split('|')
 
@@ -32,4 +51,8 @@ def test_17_ex1c(): assert day17a(parse(ex1), n=2) == 21
 def test_17_ex1d(): assert day17a(parse(ex1), n=3) == 38
 def test_17_ex1e(): assert day17a(parse(ex1), n=6) == 112
 
+def test_17_ex2a(): assert day17b(parse4(ex1), n=0) == 5
+def test_17_ex2b(): assert day17b(parse4(ex1), n=1) == 29
+
 def test_17a(day17_lines): assert day17a(parse(day17_lines)) == 319
+def test_17b(day17_lines): assert day17b(parse4(day17_lines)) == 2324
