@@ -1,6 +1,5 @@
 from functools import reduce
 from itertools import islice, product
-from more_itertools import iterate
 
 extremes = lambda seq, dim: (min(p[dim] for p in seq), max(p[dim] for p in seq))
 itercoord = lambda seq, dim: (lambda lo, hi: range(lo-1, hi+2))(*extremes(seq, dim))
@@ -15,8 +14,10 @@ def evolve(state, D):
     offset = [o for o in product([-1, 0, +1], repeat=D) if any(o)]
     counts = lambda state: ((p, sum(tuple(a+b for (a,b) in zip(p, q)) in state for q in offset))
                             for p in product(*[itercoord(state, d) for d in range(D)]))
-    return iterate(lambda state: {p for (p, c) in counts(state)
-                                  if (c in {2, 3} if p in state else c == 3)}, state)
+    while state:
+        yield state
+        state = {p for (p, c) in counts(state)
+                 if (c in {2, 3} if p in state else c == 3)}
 
 def day17(state, D, n=6): return nth((len(state) for state in evolve(state, D)), n)
 
