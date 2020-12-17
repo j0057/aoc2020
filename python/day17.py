@@ -1,5 +1,6 @@
 from functools import reduce
 from itertools import islice
+from more_itertools import iterate
 
 extremes = lambda seq, dim: (min(p[dim] for p in seq), max(p[dim] for p in seq))
 itercoord = lambda seq, dim: (lambda lo, hi: range(lo-1, hi+2))(*extremes(seq, dim))
@@ -10,17 +11,16 @@ def parse(lines):
                       for (x, char) in enumerate(line) if char == '#'}
 
 def evolve(state):
-    while True:
-        yield state
-        state = {(x, y, z)
-                 for (x, y, z, c) in ((x, y, z, sum((x+dx, y+dy, z+dz) in state
-                                                    for dx in [-1, 0, +1]
-                                                    for dy in [-1, 0, +1]
-                                                    for dz in [-1, 0, +1] if dx or dy or dz))
-                                      for x in itercoord(state, 0)
-                                      for y in itercoord(state, 1)
-                                      for z in itercoord(state, 2))
-                 if (c in {2, 3} if (x, y, z) in state else c == 3)}
+    counts = lambda state: ((x, y, z, sum((x+dx, y+dy, z+dz) in state
+                                          for dx in [-1, 0, +1]
+                                          for dy in [-1, 0, +1]
+                                          for dz in [-1, 0, +1] if dx or dy or dz))
+                            for x in itercoord(state, 0)
+                            for y in itercoord(state, 1)
+                            for z in itercoord(state, 2))
+    return iterate(lambda state: {(x, y, z)
+                                  for (x, y, z, c) in counts(state)
+                                  if (c in {2, 3} if (x, y, z) in state else c == 3)}, state)
 
 def day17a(state, n=6): return nth((len(state) for state in evolve(state)), n)
 
