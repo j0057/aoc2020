@@ -12,9 +12,8 @@ def parse(lines, D):
             for (x, char) in enumerate(line) if char == '#'}
 
 def evolve(state, D):
-    counts = lambda state: ((p, sum(tuple(a+b for (a,b) in zip(p, q)) in state
-                                    for q in product([-1, 0, +1], repeat=D)
-                                    if any(q)))
+    offset = [o for o in product([-1, 0, +1], repeat=D) if any(o)]
+    counts = lambda state: ((p, sum(tuple(a+b for (a,b) in zip(p, q)) in state for q in offset))
                             for p in product(*[itercoord(state, d) for d in range(D)]))
     return iterate(lambda state: {p for (p, c) in counts(state)
                                   if (c in {2, 3} if p in state else c == 3)}, state)
