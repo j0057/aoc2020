@@ -1,58 +1,36 @@
 from functools import reduce
-from itertools import islice
+from itertools import islice, product
 from more_itertools import iterate
 
 extremes = lambda seq, dim: (min(p[dim] for p in seq), max(p[dim] for p in seq))
 itercoord = lambda seq, dim: (lambda lo, hi: range(lo-1, hi+2))(*extremes(seq, dim))
 nth = lambda seq, n: next(islice(seq, n, None), None)
 
-def parse(lines):
-    return {(x, y, 0) for (y, line) in enumerate(lines)
-                      for (x, char) in enumerate(line) if char == '#'}
+def parse(lines, D):
+    return {(x, y) + tuple(0 for _ in range(D-2))
+            for (y, line) in enumerate(lines)
+            for (x, char) in enumerate(line) if char == '#'}
 
-def evolve(state):
-    counts = lambda state: ((x, y, z, sum((x+dx, y+dy, z+dz) in state
-                                          for dx in [-1, 0, +1]
-                                          for dy in [-1, 0, +1]
-                                          for dz in [-1, 0, +1] if dx or dy or dz))
-                            for x in itercoord(state, 0)
-                            for y in itercoord(state, 1)
-                            for z in itercoord(state, 2))
-    return iterate(lambda state: {(x, y, z)
-                                  for (x, y, z, c) in counts(state)
-                                  if (c in {2, 3} if (x, y, z) in state else c == 3)}, state)
+def evolve(state, D):
+    counts = lambda state: ((p, sum(tuple(a+b for (a,b) in zip(p, q)) in state
+                                    for q in product([-1, 0, +1], repeat=D)
+                                    if any(q)))
+                            for p in product(*[itercoord(state, d) for d in range(D)]))
+    return iterate(lambda state: {p for (p, c) in counts(state)
+                                  if (c in {2, 3} if p in state else c == 3)}, state)
 
-def parse4(lines):
-    return {(x, y, 0, 0) for (y, line) in enumerate(lines)
-                         for (x, char) in enumerate(line) if char == '#'}
-
-def evolve4(state):
-    counts = lambda state: ((x, y, z, w, sum((x+dx, y+dy, z+dz, w+dw) in state
-                                             for dx in [-1, 0, +1]
-                                             for dy in [-1, 0, +1]
-                                             for dz in [-1, 0, +1]
-                                             for dw in [-1, 0, +1] if dx or dy or dz or dw))
-                            for x in itercoord(state, 0)
-                            for y in itercoord(state, 1)
-                            for z in itercoord(state, 2)
-                            for w in itercoord(state, 3))
-    return iterate(lambda state: {(x, y, z, w)
-                                  for (x, y, z, w, c) in counts(state)
-                                  if (c in {2, 3} if (x, y, z, w) in state else c == 3)}, state)
-
-def day17a(state, n=6): return nth((len(state) for state in evolve(state)), n)
-def day17b(state, n=6): return nth((len(state) for state in evolve4(state)), n)
+def day17(state, D, n=6): return nth((len(state) for state in evolve(state, D)), n)
 
 ex1 = '.#.|..#|###'.split('|')
 
-def test_17_ex1a(): assert day17a(parse(ex1), n=0) == 5
-def test_17_ex1b(): assert day17a(parse(ex1), n=1) == 11
-def test_17_ex1c(): assert day17a(parse(ex1), n=2) == 21
-def test_17_ex1d(): assert day17a(parse(ex1), n=3) == 38
-def test_17_ex1e(): assert day17a(parse(ex1), n=6) == 112
+def test_17_ex1a(): assert day17(parse(ex1, 3), 3, n=0) == 5
+def test_17_ex1b(): assert day17(parse(ex1, 3), 3, n=1) == 11
+def test_17_ex1c(): assert day17(parse(ex1, 3), 3, n=2) == 21
+def test_17_ex1d(): assert day17(parse(ex1, 3), 3, n=3) == 38
+def test_17_ex1e(): assert day17(parse(ex1, 3), 3, n=6) == 112
 
-def test_17_ex2a(): assert day17b(parse4(ex1), n=0) == 5
-def test_17_ex2b(): assert day17b(parse4(ex1), n=1) == 29
+def test_17_ex2a(): assert day17(parse(ex1, 4), 4, n=0) == 5
+def test_17_ex2b(): assert day17(parse(ex1, 4), 4, n=1) == 29
 
-def test_17a(day17_lines): assert day17a(parse(day17_lines)) == 319
-def test_17b(day17_lines): assert day17b(parse4(day17_lines)) == 2324
+def test_17a(day17_lines): assert day17(parse(day17_lines, 3), 3) == 319
+def test_17b(day17_lines): assert day17(parse(day17_lines, 4), 4) == 2324
