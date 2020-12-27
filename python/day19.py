@@ -1,20 +1,25 @@
-import re
-
-def generate_monster(G, rule):
-    replace = lambda match: generate_monster(G, match.group(0))
-    if G[rule].startswith('"') and G[rule].endswith('"'):
-        return G[rule].strip('"')
-    else:
-        return '(' + re.sub(r'\d+', replace, G[rule]) + ')'
+from functools import reduce
 
 def parse(text):
     grammar, lines = text.split('\n\n')
-    grammar = {k: v for (k, v) in (line.split(': ') for line in grammar.split('\n'))}
-    regex = generate_monster(grammar, '0')
-    return (re.compile('^' + regex + '$', re.VERBOSE), lines.split('\n'))
+    grammar = {int(k): r.strip('"')
+                       if r.startswith('"') and r.endswith('"')
+                       else [[int(x) for x in b.split()] for b in r.split(' | ')]
+               for (k, r) in (line.split(': ') for line in grammar.split('\n'))}
+    return (grammar, lines.split('\n'))
 
-def day19a(regex, lines):
-    return sum(regex.match(line) is not None for line in lines)
+def match(G, s, r, i):
+    if i >= len(s):
+        return []
+    if isinstance(G[r], str):
+        return [i+1] if s[i] == G[r] else []
+    return [m for B in G[r]
+              for m in reduce(lambda bm, sr: [ni for bi in bm
+                                                 for ni in match(G, s, sr, bi)], B, [i])]
+
+def day19a(grammar, lines):
+    return sum(len(line) in match(grammar, line, 0, 0) for line in lines)
+
 
 def test_19_ex1():
     assert day19a(*parse(EX1)) == 2
