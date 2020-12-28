@@ -47,10 +47,39 @@ def solve(tiles):                   # --> {tile_id: [grid0, grid90, grid180, gri
             used[t] = o
     return (grid, used)
 
+def arrange(tiles, grid, flip):
+    t, b, l, r = map(int, bbox(grid))
+    G = [[sq for x in range(l, r+1)
+             for sq in tiles[grid[x+y*1j]][flip[grid[x+y*1j]]][i][1:8+1]]
+         for y in range(t, b+1)
+         for i in range(1, 8+1)]
+    return G
+
 def day20a(tiles):
     grid, _ = solve(tiles)
     t, b, l, r = bbox(grid)
     return grid[l + t * 1j] * grid[r + t * 1j] * grid[l + b * 1j] * grid[r + b * 1j]
+
+def day20b(tiles):
+    get_coords = lambda B: {x+y*1j for (y, row) in enumerate(B)
+                                   for (x, sq) in enumerate(row) if sq == 1}
+    P = get_coords([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
+                    [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]])
+    grid, flip = solve(tiles)
+    G = arrange(tiles, grid, flip)
+    for G in [G, rot(G), rot(rot(G)), rot(rot(rot(G))), mir(G), rot(mir(G)), rot(rot(mir(G))), rot(rot(rot(mir(G))))]:
+        coords = get_coords(G)
+        monsters = {c for C in ({p + (dx+dy*1j) for p in P}
+                                for dy in range(0, len(G)-3)
+                                for dx in range(0, len(G[0])-20))
+                      if C.issubset(coords)
+                      for c in C}
+        if monsters:
+            for y, row in enumerate(G):
+                print(''.join('\u2588'*2 if (x+y*1j) in monsters else '\u2592'*2 if sq else '\u2593'*2 for x, sq in enumerate(row)))
+            return len(coords) - len(monsters)
+    raise Exception('no monsters found')
 
 def test_20_parse():
     assert parse(EX1)[2311][0][0] == [0, 0, 1, 1, 0, 1, 0, 0, 1, 0]
@@ -59,8 +88,14 @@ def test_20_parse():
 def test_20_ex1():
     assert day20a(parse(EX1)) == 20899048083289
 
+def test_20_ex2():
+    assert day20b(parse(EX1)) == 273
+
 def test_20a(day20_text):
     assert day20a(parse(day20_text)) == 108603771107737
+
+def test_20b(day20_text):
+    assert day20b(parse(day20_text)) == 2129
 
 EX1 = r'''
 Tile 2311:|..##.#..#.|##..#.....|#...##..#.|####.#...#|##.##.###.|##...#.###|.#.#.#..##|..#....#..|###...#.#.|..###..###|
