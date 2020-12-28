@@ -1,11 +1,12 @@
 from functools import reduce
 from math import inf
 
+rot = lambda grid: [[grid[y][x] for y in range(len(grid)-1, 0-1, -1)] for x in range(0, len(grid), 1)]
+mir = lambda grid: [row[:] for row in reversed(grid)]
+
 bbox = lambda seq: reduce(lambda a, b: (min(a[0], b.imag), max(a[1], b.imag), min(a[2], b.real), max(a[3], b.real)), seq, (+inf, -inf, +inf, -inf))
 
 def parse(text):
-    rot = lambda tile: [[tile[y][x] for y in range(10-1, 0-1, -1)] for x in range(0, 10, 1)]
-    mir = lambda tile: [row[:] for row in reversed(tile)]
     def parse_tiles(tiles):
         for tile in tiles:
             (id, *squares) = tile.split('\n')
