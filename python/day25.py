@@ -8,3 +8,5 @@ def find_key(card_pub, door_pub, modulus=20201227):
 def test_25_ex1(): assert find_key(5764801, 17807724) == 14897079
 
 def test_25a(day25_numbers): assert find_key(*day25_numbers) == 5414549
+
+def test_25b(): assert 50 == 50
