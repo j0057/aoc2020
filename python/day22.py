@@ -5,17 +5,17 @@ def parse(text):
             tuple(int(x) for x in p2.split('\n')[1:]))
 
 def crab_combat(D1, D2):
-    yield (D1, D2)
     while D1 and D2:
         c1, D1 = D1[0], D1[1:]
         c2, D2 = D2[0], D2[1:]
         D1, D2 = (D1 + (c1, c2), D2) if c1 > c2 else (D1, D2 + (c2, c1))
-        yield (D1, D2)
+    return (D1, D2)
+
+def score(D1, D2):
+    return sum((i+1) * v for d in [D1, D2] for (i, v) in enumerate(reversed(d)))
 
 def day22a(d1, d2):
-    D = [*crab_combat(d1, d2)]
-    return sum((i+1) * v for d in D[-1]
-                         for (i, v) in enumerate(reversed(d)))
+    return score(*crab_combat(d1, d2))
 
 def test_22_ex1():
     assert day22a(*parse(EX1)) == 306
